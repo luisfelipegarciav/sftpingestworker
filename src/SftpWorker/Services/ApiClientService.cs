@@ -20,7 +20,7 @@ namespace SftpWorker.Services
         public async Task<ApiIngestResponse> PostRecordsAsync(ApiIngestRequest request, CancellationToken cancellationToken)
         {
             var client = _httpClientFactory.CreateClient();
-            var url = $"{_apiSettings.BaseUrl}/{_apiSettings.IngestEndpoint}";
+            var url = $"{_apiSettings.IngestEndpoint}";
             var httpContent = new StringContent(
                 JsonSerializer.Serialize(request),
                 Encoding.UTF8,

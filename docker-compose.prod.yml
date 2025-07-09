@@ -1,0 +1,21 @@
+version: "3.8"
+
+services:
+  sftpworker:
+    image: myorg/sftpworker:latest
+    environment:
+      - SftpSettings__Host=sftp.prod.example.com
+      - SftpSettings__Port=22
+      - SftpSettings__Username=produser
+      - SftpSettings__Password=prodpassword
+      - SftpSettings__RemoteFolder=/upload
+      - SftpSettings__FilePattern=*.csv
+      - ApiSettings__IngestEndpoint=https://api.prod.example.com
+      - WorkerSettings__IntervalSeconds=300
+    restart: unless-stopped
+    networks:
+      - appnet
+
+networks:
+  appnet:
+    driver: bridge

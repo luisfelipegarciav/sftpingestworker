@@ -1,10 +1,12 @@
-﻿namespace SftpWorker.Services
+﻿using SftpWorker.Models;
+
+namespace SftpWorker.Services
 {
     public interface ISftpService
     {
-        Task<IEnumerable<string>> ListCsvFilesAsync(CancellationToken cancellationToken);
+        Task<IEnumerable<string>> GetFilesToProcess(CancellationToken cancellationToken);
         Task<Stream> DownloadFileAsync(string fileName, CancellationToken cancellationToken);
-        Task DeleteFileAsync(string fileName, CancellationToken cancellationToken);
-        Task MoveFileAsync(string fileName, string destination, CancellationToken cancellationToken);
+        Task EnsureWorkflowFoldersExistAsync(IEnumerable<string> workflowFolders, CancellationToken cancellationToken);
+        Task<MoveFilesResult> MoveFileAsync(string sourceFolder, string destinationFolder, IEnumerable<string> fileNames, CancellationToken cancellationToken, string? preffix = null);
     }
 }

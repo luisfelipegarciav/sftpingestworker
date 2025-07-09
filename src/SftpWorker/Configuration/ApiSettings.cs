@@ -1,9 +1,8 @@
 ﻿namespace SftpWorker.Configuration
 {
-    public record ApiSettings
-    (
-        string BaseUrl,
-        string IngestEndpoint = "/api/ingest",
-        string? ApiKey = null
-    );
+    public class ApiSettings
+    {
+        public string? IngestEndpoint { get; set; }
+        public string? ApiKey { get; set; }
+    }
 }

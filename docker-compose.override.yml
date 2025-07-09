@@ -1,0 +1,25 @@
+version: "3.8"
+
+services:
+  sftpworker:
+    environment:
+      - SftpSettings__Host=sftp
+      - SftpSettings__Port=${SFTP_PORT}
+      - SftpSettings__Username=${SFTP_USER}
+      - SftpSettings__Password=${SFTP_PASSWORD}
+      - SftpSettings__RemoteFolder=${SFTP_REMOTE_FOLDER}
+      - SftpSettings__FilePattern=${SFTP_FILE_PATTERN}
+      - ApiSettings__IngestEndpoint=${API_INGEST_ENDPOINT}
+      - WorkerSettings__IntervalSeconds=${WORKER_INTERVAL_SECONDS}
+    volumes:
+      - sftp-upload:/data/incoming
+
+  sftp:
+    ports:
+      - "2222:22"
+    volumes:
+      - sftp-upload:/home/${SFTP_USER}/upload
+
+  mock-api:
+    ports:
+      - "5000:5000"

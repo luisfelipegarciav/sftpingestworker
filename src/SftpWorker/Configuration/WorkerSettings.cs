@@ -1,11 +1,7 @@
 ﻿namespace SftpWorker.Configuration
 {
-    public record WorkerSettings
-    (
-        //string WorkerName = "SFTP Worker",
-        //int MaxConcurrentDownloads = 5,
-        //int MaxRetries = 3,
-        //TimeSpan RetryDelay = default,
-        int IntervalSeconds = 300
-    );
+    public class WorkerSettings
+    {
+        public int IntervalSeconds { get; set; } = 300;
+    }
 }

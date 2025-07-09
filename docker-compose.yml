@@ -1,0 +1,62 @@
+version: "3.8"
+
+services:
+  sftpworker:
+    build:
+      context: .
+      dockerfile: src/SftpWorker/Dockerfile
+    environment:
+      - SftpSettings__Host=sftp
+      - SftpSettings__Port=${SFTP_PORT}
+      - SftpSettings__Username=${SFTP_USER}
+      - SftpSettings__Password=${SFTP_PASSWORD}
+      - SftpSettings__RemoteFolder=${SFTP_REMOTE_FOLDER}
+      - SftpSettings__FilePattern=${SFTP_FILE_PATTERN}
+      - ApiSettings__IngestEndpoint=${API_INGEST_ENDPOINT}
+      - WorkerSettings__IntervalSeconds=${WORKER_INTERVAL_SECONDS}
+    depends_on:
+      - sftp
+      - mock-api
+    volumes:
+      - sftp-upload:/data/incoming
+    restart: unless-stopped
+    networks:
+      - appnet
+
+  sftp:
+    image: atmoz/sftp:latest
+    container_name: mock-sftp
+    ports:
+      - "2222:22"
+    environment:
+      SFTP_USERS: "${SFTP_USER}:${SFTP_PASSWORD}:1001:100"
+      SFTP_USER: "${SFTP_USER}"
+      SFTP_PASSWORD: "${SFTP_PASSWORD}"
+    volumes:
+      - sftp-upload:/home/${SFTP_USER}/upload
+      - ./scripts/sftp/sftp-entrypoint.sh:/sftp-entrypoint.sh:ro
+    entrypoint: ["/bin/bash", "/sftp-entrypoint.sh"]
+    command: ${SFTP_USER}:${SFTP_PASSWORD}:::upload
+    healthcheck:
+      test: ["CMD", "sftp", "-P", "22", "${SFTP_USER}@localhost", "ls /upload"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - appnet
+
+  mock-api:
+    image: ghcr.io/mccutchen/go-httpbin:v2.10.0
+    ports:
+      - "5000:5000"
+    environment:
+      - PORT=5000
+    networks:
+      - appnet
+
+networks:
+  appnet:
+    driver: bridge
+
+volumes:
+  sftp-upload:
